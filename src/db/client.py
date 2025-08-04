@@ -1,0 +1,16 @@
+from pymilvus import MilvusClient
+
+from ..configs import Config
+
+
+config = Config.load()
+
+
+client = MilvusClient(
+    uri="http://localhost:19530",
+    token="root:Milvus"
+)
+
+client.create_database(
+    db_name="my_database_1"
+)

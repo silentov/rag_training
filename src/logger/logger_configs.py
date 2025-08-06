@@ -8,8 +8,7 @@ def setup_logger():
 
     logger.remove()
 
-    # Создаём папку для логов
-    project_root = Path(__file__).parent.resolve()
+    project_root = Path(__file__).parent.parent.resolve()
     log_dir = project_root / "logs"
     log_dir.mkdir(exist_ok=True)
 

@@ -1,11 +1,11 @@
 from pymilvus import MilvusClient
 
-from ..configs import Config
+from ..configs.configs import Config
 
 
 config = Config.load()
 
-
+#TODO: создать клиент для доступа к бд
 client = MilvusClient(
     uri="http://localhost:19530",
     token="root:Milvus"

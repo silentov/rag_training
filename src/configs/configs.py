@@ -4,11 +4,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from logger import logger
 
 import sys
+from pathlib import Path
 
+
+project_root = Path(__file__).parent.parent.resolve()
 
 class ConfigSettings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+        env_file=project_root/".env", env_file_encoding="utf-8", extra="ignore"
     )
 
 
@@ -29,7 +32,7 @@ class GigaConfig(ConfigSettings):
 class FastAPIConfig(ConfigSettings):
     model_config = SettingsConfigDict(env_prefix="fastapi_")
 
-    port: str
+    port: int
 
 
 class Config(BaseSettings):
@@ -39,6 +42,10 @@ class Config(BaseSettings):
     
     @classmethod
     def load(cls) -> "None | Config":    # ->"type" is forward references
+        env_file = project_root / ".env"
+        if not env_file.exists():
+            logger.critical(f"❌ Файл конфигурации {env_file} не найден.")
+            sys.exit(1)
         try:
             return cls()
         except ValidationError as e:
@@ -51,3 +58,4 @@ class Config(BaseSettings):
             sys.exit(1)
 
 
+configs = Config.load()

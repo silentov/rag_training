@@ -1,8 +1,6 @@
 from langchain_gigachat.chat_models import GigaChat
-from langchain_core.messages import HumanMessage, SystemMessage
 
 from configs import configs
-from loguru import logger
 
 model = GigaChat(
     credentials=configs.giga.token.get_secret_value(),

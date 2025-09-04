@@ -3,17 +3,19 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from datetime import datetime
 
-from database.db import Base
+from ..database import Base
 from auth.models import user_chat_sessions, User
 
 
 class ChatSession(Base):
-    messages: Mapped[list["ChatMessage"]] = relationship("ChatMessage", back_populates="sessions")
-    
-    users: Mapped[list["User"]] = relationship(
-        secondary=user_chat_sessions,
-        back_populates="chat_sessions"
+    messages: Mapped[list["ChatMessage"]] = relationship(
+        "ChatMessage", back_populates="sessions"
     )
+
+    users: Mapped[list["User"]] = relationship(
+        secondary=user_chat_sessions, back_populates="chat_sessions"
+    )
+
 
 class ChatMessage(Base):
     session_id: Mapped[int] = mapped_column(ForeignKey("t_chatsession.id"))

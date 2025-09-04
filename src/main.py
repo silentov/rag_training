@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    #TODO: добавить проверку подключения к БД
+    # TODO: добавить проверку подключения к БД
     logger.info("Запуск приложения...")
     yield
 
@@ -18,5 +18,5 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.include_router(api_router)
 
-if __name__=="__main__":
-    uvicorn.run(app, port=configs.app.port, host='0.0.0.0')
+if __name__ == "__main__":
+    uvicorn.run(app, port=configs.app.port, host="0.0.0.0")

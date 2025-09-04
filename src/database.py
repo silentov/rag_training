@@ -13,6 +13,7 @@ DATABASE_URL = f"postgresql+asyncpg://{configs.postgre.user}:{configs.postgre.pa
 engine = create_async_engine(DATABASE_URL, echo=True)
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
+
 async def get_db():
     async with AsyncSessionLocal() as session:
         yield session
@@ -24,12 +25,14 @@ class Base(AsyncAttrs, DeclarativeBase):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), onupdate=func.now()
+    )
 
     @declared_attr.directive
     def __tablename__(cls) -> str:
-        return 't' + '_' + cls.__name__.lower()
-    
+        return "t" + "_" + cls.__name__.lower()
+
     def to_dict(self) -> dict[str, Any]:
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 

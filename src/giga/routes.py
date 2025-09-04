@@ -1,13 +1,10 @@
 from fastapi import APIRouter
 
-#from models.models import Message
-
-import uuid
-from giga.agent import GigaService
-from loguru import logger
+# from models.models import Message
 
 
-router = APIRouter(prefix="/chat",tags=["chat"])
+
+router = APIRouter(prefix="/chat", tags=["chat"])
 
 # service = GigaService()
 

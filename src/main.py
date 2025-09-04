@@ -1,6 +1,6 @@
-from configs.configs import configs
-from logger import logger
-from api.main_router import api_router
+from configs import configs
+from loguru import logger
+from .routes import api_router
 
 from fastapi import FastAPI
 import uvicorn

@@ -11,7 +11,7 @@ from datetime import datetime
 
 DATABASE_URL = f"postgresql+asyncpg://{configs.postgre.user}:{configs.postgre.password}@localhost:5433/{configs.postgre.db}"
 
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(DATABASE_URL, echo=True, hide_parameters=True)
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 NAMING_CONVENTION = {

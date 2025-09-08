@@ -29,14 +29,9 @@ class SUserRegister(UserBase):
     password: str = Field(
         min_length=5, max_length=50, description="Пароль, от 5 до 50 знаков"
     )
-    confirm_password: str = Field(
-        min_length=5, max_length=50, description="Повторите пароль"
-    )
 
     @model_validator(mode="after")
-    def check_password(self) -> Self:
-        if self.password != self.confirm_password:
-            raise ValueError("Пароли не совпадают")
+    def hash_password(self) -> Self:
         self.password = pwd_context.hash(
             self.password
         )  # хешируем пароль до сохранения в базе данных

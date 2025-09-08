@@ -3,18 +3,19 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from passlib.context import CryptContext
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserBase(BaseModel):
     login: str = Field(min_length=3, max_length=50, description="Логин пользователя")
-    first_name: Optional[str] = Field(
+    firstname: Optional[str] = Field(
         default=None,
         min_length=3,
         max_length=50,
         description="Имя, от 3 до 50 символов",
     )
-    last_name: Optional[str] = Field(
+    lastname: Optional[str] = Field(
         default=None,
         min_length=3,
         max_length=50,

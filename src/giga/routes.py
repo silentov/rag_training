@@ -3,8 +3,7 @@ from fastapi import APIRouter
 # from models.models import Message
 
 
-
-router = APIRouter(prefix="/chat", tags=["chat"])
+giga_router = APIRouter(prefix="/chat", tags=["chat"])
 
 # service = GigaService()
 

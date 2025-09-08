@@ -1,30 +1,22 @@
-from sqlalchemy import Table, Column, ForeignKey
-from sqlalchemy.orm import Mapped, relationship
+from typing import List
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, relationship, mapped_column
 
-from ..database import Base
-from giga.models import ChatSession
+from database import Base
+from models import associations
 
 
-user_chat_sessions = Table(
-    "t_user_chat_session",
-    Base.metadata,
-    Column("user_id", ForeignKey("t_user.id", ondelete="CASCADE"), primary_key=True),
-    Column(
-        "chat_session_id",
-        ForeignKey("t_chatsession.id", ondelete="CASCADE"),
-        primary_key=True,
-    ),
-)
+print("user")
 
 
 class User(Base):
     firstname: Mapped[str]
     lastname: Mapped[str]
-    login: Mapped[str]
+    login: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
     password: Mapped[str]
 
-    is_active: Mapped[bool] = True
-
-    chat_sessions: Mapped[list["ChatSession"]] = relationship(
-        secondary=user_chat_sessions, back_populates="users"
+    chat_sessions: Mapped[List["ChatSession"]] = relationship(  # noqa F821
+        "ChatSession",
+        secondary=associations.user_chat_sessions,
+        back_populates="users",
     )

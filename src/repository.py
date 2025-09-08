@@ -1,4 +1,4 @@
-from typing import List, Any, TypeVar, Generic
+from typing import List, Any, Generic, Protocol, TypeVar, runtime_checkable
 from pydantic import BaseModel
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.future import select
@@ -11,7 +11,7 @@ from database import Base
 T = TypeVar("T", bound=Base)
 
 
-class BaseDAO(Generic[T]):
+class BaseRepository(Generic[T]):
     model: type[T]
 
     @classmethod
@@ -269,3 +269,13 @@ class BaseDAO(Generic[T]):
             await session.rollback()
             logger.error(f"Ошибка при массовом обновлении: {e}")
             raise
+
+
+T = TypeVar("T")
+
+
+@runtime_checkable
+class Repository(Protocol[T]):
+    async def get(self, obj_id: int) -> T | None: ...
+    async def add(self, obj: T) -> T: ...
+    async def delete(self, obj_id: int) -> int: ...

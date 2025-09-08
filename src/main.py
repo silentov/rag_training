@@ -1,11 +1,15 @@
 from configs import configs
 from loguru import logger
-from .routes import api_router
+from routes import api_router
 
 from fastapi import FastAPI
 import uvicorn
 
 from contextlib import asynccontextmanager
+
+from sqlalchemy.orm import configure_mappers
+
+configure_mappers()
 
 
 @asynccontextmanager

@@ -1,6 +1,6 @@
 from pymilvus import MilvusClient
 
-from ..configs.configs import Config
+from ..configs import Config
 
 
 config = Config.load()

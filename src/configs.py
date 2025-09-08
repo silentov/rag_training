@@ -8,7 +8,7 @@ from typing import Optional
 from pathlib import Path
 
 
-project_root = Path(__file__).parent.parent.resolve()
+project_root = Path(__file__).parent.resolve()
 
 
 class ConfigSettings(BaseSettings):

@@ -1,19 +1,25 @@
+from typing import List
 from sqlalchemy import String, Text, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from datetime import datetime
 
-from ..database import Base
-from auth.models import user_chat_sessions, User
+from database import Base
+from models import associations
+
+
+print("chat")
 
 
 class ChatSession(Base):
     messages: Mapped[list["ChatMessage"]] = relationship(
-        "ChatMessage", back_populates="sessions"
+        "ChatMessage", back_populates="session"
     )
 
-    users: Mapped[list["User"]] = relationship(
-        secondary=user_chat_sessions, back_populates="chat_sessions"
+    users: Mapped[List["User"]] = relationship(  # noqa F821
+        "User",
+        secondary=associations.user_chat_sessions,
+        back_populates="chat_sessions",
     )
 
 

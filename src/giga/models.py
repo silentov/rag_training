@@ -8,9 +8,6 @@ from database import Base
 from models import associations
 
 
-print("chat")
-
-
 class ChatSession(Base):
     messages: Mapped[list["ChatMessage"]] = relationship(
         "ChatMessage", back_populates="session"

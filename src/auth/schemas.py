@@ -7,6 +7,11 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+
+
 class UserBase(BaseModel):
     login: str = Field(min_length=3, max_length=50, description="Логин пользователя")
     firstname: Optional[str] = Field(

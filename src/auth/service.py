@@ -1,8 +1,8 @@
 from fastapi import HTTPException
 from loguru import logger
 from unit_of_work import UnitOfWork
-from .schemas import SUserRegister, SUserAuth
-from .utils import verify_password
+from .schemas import SUserRegister, SUserAuth, TokenResponse
+from .utils import verify_password, create_tokens
 from exceptions import IncorrectLoginException, IncorrectEmailOrPasswordException
 
 
@@ -12,7 +12,7 @@ class UserService:
 
     async def create_user(self, user: SUserRegister):
         logger.debug("Creating user: {}", user)
-        
+
         created_user = await self.uow.users.add(user)
 
         if created_user is None:
@@ -30,19 +30,16 @@ class UserService:
     async def view_user(self):
         pass
 
-    async def auth_user(self, user: SUserAuth) -> bool | None:
+    async def auth_user(self, user: SUserAuth) -> TokenResponse | None:
         db_user = await self.uow.users.find_user_by_login(user.login)
 
-        if user is None:
+        if db_user is None:
             raise IncorrectLoginException
 
         if not verify_password(user.password, db_user.password):
             raise IncorrectEmailOrPasswordException
-        
-        return {
-            "ok": True,
-            "message": "Авторизация успешна!"
-        }
+
+        return TokenResponse(**create_tokens({"sub": db_user.id}))
 
     async def logout_user(self):
         pass

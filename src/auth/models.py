@@ -6,9 +6,6 @@ from database import Base
 from models import associations
 
 
-print("user")
-
-
 class User(Base):
     firstname: Mapped[str]
     lastname: Mapped[str]

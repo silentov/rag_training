@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.16.4",
     "asyncpg>=0.30.0",
+    "bcrypt==4.0.1",
     "fastapi>=0.116.1",
     "langchain-gigachat>=0.3.12",
     "langgraph>=0.6.3",
@@ -15,6 +16,12 @@ dependencies = [
     "pydantic-settings>=2.10.1",
     "pydantic[all]>=2.11.7",
     "pymilvus>=2.5.14",
-    "ruff>=0.12.7",
+    "python-jose>=3.5.0",
     "uvicorn>=0.35.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12.7",
+    "pre-commit>=4.3.0",
 ]

@@ -48,11 +48,19 @@ class FastAPIConfig(ConfigSettings):
     port: int
 
 
+class AuthConfig(ConfigSettings):
+    model_config = SettingsConfigDict(env_prefix="auth_")
+
+    secret_key: str
+    algorithm: str
+
+
 class Config(BaseSettings):
     milvus: MilvusConfig = Field(default_factory=MilvusConfig)
     postgre: PostgreConfig = Field(default_factory=PostgreConfig)
     giga: GigaConfig = Field(default_factory=GigaConfig)
     app: FastAPIConfig = Field(default_factory=FastAPIConfig)
+    auth: AuthConfig = Field(default_factory=AuthConfig)
 
     @classmethod
     @lru_cache(maxsize=1)  # Кэширование результата

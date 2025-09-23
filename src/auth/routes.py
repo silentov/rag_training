@@ -1,7 +1,8 @@
-from fastapi import Depends, HTTPException, APIRouter
+from fastapi import Depends, APIRouter, Response
 from .dependencies import get_service
 from .service import UserService
 from .schemas import SUserRegister, SUserAuth
+from .utils import set_tokens
 
 
 users_router = APIRouter(prefix="/users", tags=["chat"])
@@ -14,9 +15,17 @@ async def register_user(
     user = await user_service.create_user(user)
     return user
 
+
 @users_router.post("/auth")
 async def login_user(
-    user: SUserAuth, user_service: UserService = Depends(get_service)
+    response: Response,
+    user: SUserAuth,
+    user_service: UserService = Depends(get_service),
 ):
-    return await user_service.auth_user(user)
+    tokens = await user_service.auth_user(user)
+    set_tokens(response, tokens)
 
+    return {
+        "ok": True,
+        "message": "Пользователь успешно авторизовался!",
+    }

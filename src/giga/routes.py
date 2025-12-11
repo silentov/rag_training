@@ -1,14 +1,17 @@
-from fastapi import APIRouter
+import uuid
+from fastapi import APIRouter, Depends
 
-# from models.models import Message
+from .schemas import Message
+from .utils import get_gigachat_service
+from .service import GigaService
 
 
 giga_router = APIRouter(prefix="/chat", tags=["chat"])
 
-# service = GigaService()
 
-# @router.post("/send")
-# async def send_message(input_message: Message):
-#     logger.info("Получили сообщение")
-#     input_message.rquid = uuid.uuid4()
-#     return await service.send_message(input_message)
+@giga_router.post("/send")
+async def send_message(
+    input_message: Message, service: GigaService = Depends(get_gigachat_service)
+):
+    input_message.rquid = uuid.uuid4()
+    return await service.send_message(input_message)

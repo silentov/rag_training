@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from datetime import datetime
 
-from database import Base
+from db.database import Base
 from models import associations
 
 

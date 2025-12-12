@@ -1,11 +1,19 @@
 from abc import ABC, abstractmethod
 
-from langchain_core.messages import SystemMessage, HumanMessage
-from langchain_core.language_models.chat_models import BaseChatModel
+import gigachat.context
+from gigachat import GigaChat
+from gigachat.models import Chat, Messages, MessagesRole
 from gigachat.exceptions import ResponseError
 from loguru import logger
 
 from .schemas import Message, LLMResponse
+from utils.decorators import async_retry
+from utils.exceptions import (
+    TokenLimitExceededError,
+    BackendError,
+    RateLimitError,
+    LLMBusinessException,
+)
 
 
 class BaseLLMService(ABC):
@@ -15,7 +23,9 @@ class BaseLLMService(ABC):
 
 
 class GigaService(BaseLLMService):
-    def __init__(self, model: BaseChatModel, system_promt: str) -> None:
+    def __init__(
+        self, model: GigaChat, system_prompt: str
+    ) -> None:  # исправлена опечатка
         """
         Инициализация сервиса для взаимдоействия с API GigaChat
 
@@ -25,9 +35,10 @@ class GigaService(BaseLLMService):
         :type system_promt: str
         """
         self._model = model
-        self._system_prompt = system_promt
+        self._system_prompt = system_prompt
 
-    async def send_message(self, message: Message):
+    @async_retry(exceptions=[RateLimitError], max_retries=3)
+    async def send_message(self, message: Message) -> LLMResponse:
         """
         Асинхронный метод для отправки сообщения в API GigaChat
 
@@ -36,38 +47,37 @@ class GigaService(BaseLLMService):
         """
         logger.info("Отправляем сообщение. rquid: {}", message.rquid)
         try:
-            response = await self._model.ainvoke(
-                [
-                    SystemMessage(content=self._system_prompt),
-                    HumanMessage(content=message.message),
+            gigachat.context.request_id_cvar.set(message.rquid)
+            payload = Chat(
+                messages=[
+                    Messages(role=MessagesRole.SYSTEM, content=self._system_prompt),
+                    Messages(role=MessagesRole.USER, content=message.message),
                 ]
             )
+            response = await self._model.achat(payload)
+            return LLMResponse(
+                rquid=message.rquid,
+                answer=response.choices[0].message.content,
+                status_code=200,
+            )
         except ResponseError as e:
-            if e.args[1] == 429:
-                import asyncio
+            status_code = getattr(e, "status_code", None) or (
+                e.args[1] if len(e.args) > 1 else None
+            )
+            logger.error("Ошибка GigaChat: статус {}", status_code)
 
-                logger.error("Превышено количество одновременных запросов... Ждем.")
-
-                await asyncio.sleep(1)
-
-                response = await self._model.ainvoke(
-                    [
-                        SystemMessage(content=self._system_prompt),
-                        HumanMessage(content=message.message),
-                    ]
-                )
-            elif e.args[1] == 413:
-                tokens = self._model.tokens_count(
-                    input_=[self._system_prompt, message.message],
-                    model="GigaChat-2-Max",
-                )
-                logger.error(
-                    "Превышено количество входящих токенов. Текущее количество токенов: {}",
-                    tokens,
-                )
-            elif e.args[1] in (402, 403, 500):
-                logger.error("Ошибка на сервере: {}", e.args[1])
-        except Exception as e:
-            logger.error(e)
-        else:
-            return response.content
+            if status_code == 413:
+                raise TokenLimitExceededError()
+            elif status_code >= 500:
+                raise BackendError(code=status_code)
+            elif status_code == 429:
+                raise RateLimitError(rquid=message.rquid)
+            else:
+                raise LLMBusinessException(status_code=status_code)
+        except Exception:
+            logger.exception("Неизвестная ошибка при вызове модели")
+            return LLMResponse(
+                rquid=message.rquid,
+                answer="Возникла неизвестная ошибка",
+                status_code=500,
+            )

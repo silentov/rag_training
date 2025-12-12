@@ -10,4 +10,5 @@ class Message(BaseModel):
 class LLMResponse(BaseModel):
     rquid: str
     answer: str
+    status_code: int
     model_name: Optional[str] = None

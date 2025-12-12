@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 from sqlalchemy import update as sqlalchemy_update, delete as sqlalchemy_delete, func
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
-from database import Base
+from db.database import Base
 
 # Объявляем типовой параметр T с ограничением, что это наследник Base
 T = TypeVar("T", bound=Base)

@@ -46,6 +46,7 @@ class FastAPIConfig(ConfigSettings):
     model_config = SettingsConfigDict(env_prefix="fastapi_")
 
     port: int
+    environment: str
 
 
 class AuthConfig(ConfigSettings):

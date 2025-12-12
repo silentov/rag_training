@@ -1,6 +1,6 @@
 from typing import Any, AsyncGenerator
-from database import AsyncSessionLocal
-from unit_of_work import UnitOfWork
+from db.database import AsyncSessionLocal
+from db.unit_of_work import UnitOfWork
 
 from loguru import logger
 

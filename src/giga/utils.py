@@ -1,4 +1,4 @@
-from langchain_gigachat.chat_models import GigaChat
+from gigachat import GigaChat
 
 from .service import GigaService
 from configs import configs
@@ -16,5 +16,5 @@ def get_model() -> GigaChat:
 
 def get_gigachat_service() -> GigaService:
     return GigaService(
-        model=get_model(), system_promt="Ты вежливый и полезный ассистент"
+        model=get_model(), system_prompt="Ты вежливый и полезный ассистент"
     )

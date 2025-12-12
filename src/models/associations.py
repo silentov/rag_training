@@ -1,5 +1,5 @@
 from sqlalchemy import Table, Column, ForeignKey
-from database import Base
+from db.database import Base
 
 user_chat_sessions = Table(
     "t_user_chat_session",
